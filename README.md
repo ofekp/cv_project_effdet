@@ -1,8 +1,9 @@
 # Create Env
+```
 conda create -n project python=3.7 pytorch=1.3 torchvision matplotlib imageio
+```
 
 or
-
 ```
 conda install -c pytorch torchvision
 conda install -c conda-forge matplotlib
@@ -11,7 +12,6 @@ conda install -c effdet
 ```
 
 The (in either case):
-
 ```
 pip install timm
 ```
