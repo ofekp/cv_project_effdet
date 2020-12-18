@@ -38,7 +38,7 @@ python Main.py -myAnns newAnns.txt -anns annotationsTrain.txt -buses busesDir -s
 ```
 
 # Train
-in Miniconda, cd to Code folder, then run:
+in Miniconda, run:
 ```
 activate project
 cd Code

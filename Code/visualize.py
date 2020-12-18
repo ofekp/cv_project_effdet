@@ -40,7 +40,7 @@ class Visualize:
         for box, class_id in zip(bounding_boxes, labels):
             class_id = class_id.cpu().numpy()
             bbx.add(image_with_bb, *box, label=(self.get_label(class_id) if decode_labels else str(class_id)),
-                    font=font)
+                    color=class_id, font=font)
 
         # creating the alpha channel for the bounding box image (to avoid obscuring the original image with black background)
         bb_alpha = np.array(np.max(image_with_bb[:, :, :] > 0, axis=2) > 0, dtype=int)
@@ -92,12 +92,10 @@ class Visualize:
                 mask = torch.where(curr_mask == 0, mask, curr_mask * (255 - 4 * class_id))
 
         if not split_segments:
-            fig, ax = plt.subplots(nrows=1, ncols=2, figsize=figsize)
-            ax[0].imshow(img.permute(1, 2, 0).cpu())
-            ax[0].axis('off')
-            ax[1].imshow(img.permute(1, 2, 0).cpu())
-            ax[1].imshow(image_with_bb)
-            ax[1].axis('off')
+            fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+            ax.imshow(img.permute(1, 2, 0).cpu())
+            ax.imshow(image_with_bb)
+            ax.axis('off')
         else:
             num_segments = len(masks)
             if grid_layout:

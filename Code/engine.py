@@ -38,7 +38,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, gradient_accum
         # targets = [{k: v.to(device) if torch.is_tensor(v) else v for k, v in t.items()} for t in targets]
         # targets = {k: v.to(device) if torch.is_tensor(v) else v for k, v in targets.items()}
 
-        # vis = visualize.Visualize('.', 512)
+        # vis = visualize.Visualize('.', targets['img_size'][0][0])
         # num_of_detections = len(torch.where(targets['cls'][0] > -1)[0])
         # vis.show_image_data(images[0], targets['cls'][0,:num_of_detections].int(), None, targets['bbox'][0,:num_of_detections,[1,0,3,2]])
 

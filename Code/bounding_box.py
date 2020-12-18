@@ -12,17 +12,20 @@ from hashlib import md5 as _md5
 _LOC = _path.realpath(_path.join(_os.getcwd(),_path.dirname(__file__)))
 
 #https://clrs.cc/
+# ['green', 'yellow', 'white', 'gray', 'blue', 'red']
 _COLOR_NAME_TO_RGB = dict(
     navy=((0, 38, 63), (119, 193, 250)),
+    green=((0, 204, 84), (15, 64, 31)),
+    yellow=((255, 216, 70), (103, 87, 28)),
+    white=((255, 255, 255), (103, 87, 28)),
+    gray=((125, 125, 125), (103, 87, 28)),
     blue=((0, 120, 210), (173, 220, 252)),
+    red=((255, 47, 65), (131, 0, 17)),
     aqua=((115, 221, 252), (0, 76, 100)),
     teal=((15, 205, 202), (5, 5, 5)),
     olive=((52, 153, 114), (25, 58, 45)),
-    green=((0, 204, 84), (15, 64, 31)),
     lime=((1, 255, 127), (0, 102, 53)),
-    yellow=((255, 216, 70), (103, 87, 28)),
     orange=((255, 125, 57), (104, 48, 19)),
-    red=((255, 47, 65), (131, 0, 17)),
     maroon=((135, 13, 75), (239, 117, 173)),
     fuchsia=((246, 0, 184), (103, 0, 78)),
     purple=((179, 17, 193), (241, 167, 244)),
@@ -73,10 +76,12 @@ def add(image, left, top, right, bottom, label=None, color=None, font=_FONT):
     if label and type(label) is not str:
         raise TypeError("'label' must be a str")
 
-    if label and not color:
-        hex_digest = _md5(label.encode()).hexdigest()
-        color_index = int(hex_digest, 16) % len(_COLOR_NAME_TO_RGB)
-        color = _COLOR_NAMES[color_index]
+    # if label and not color:
+    #     hex_digest = _md5(label.encode()).hexdigest()
+    #     color_index = int(hex_digest, 16) % len(_COLOR_NAME_TO_RGB)
+    #     color = _COLOR_NAMES[color_index]
+
+    color = _COLOR_NAMES[color]
 
     if not color:
         color = _DEFAULT_COLOR_NAME
