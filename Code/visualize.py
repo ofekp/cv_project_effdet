@@ -172,7 +172,7 @@ class Visualize:
             # boxes = prediction[0]['boxes']
             # class_ids = prediction[0]['labels']
             # masks = prediction[0]['masks'][:, 0]
-            threshold = 0.4
+            threshold = 0.5
             batch_size = len(predictions)
             for i in range(batch_size):
                 img_predictions = predictions[i]  # take only the first image in the batch

@@ -91,6 +91,13 @@ parser.add_argument('--save-every', type=int, default=5, metavar='NUM_EPOCHS',
 parser.add_argument('--eval-every', type=int, default=10, metavar='NUM_EPOCHS',
                     help='evaluate and print the evaluation to screen every few epochs (default: 10)')
 
+# following is needed for reproducibility
+# refer to https://pytorch.org/docs/stable/notes/randomness.html
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+np.random.seed(181)
+torch.manual_seed(129)
+
 def parse_args():
     # parse the args that are passed to this script
     args = parser.parse_args()

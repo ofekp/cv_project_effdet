@@ -1,4 +1,3 @@
-import random
 import torch
 import numpy as np
 from PIL import Image
@@ -8,6 +7,15 @@ import math
 import torchvision.transforms.functional as TF
 from torchvision.transforms import functional as F
 from torchvision import transforms as T
+
+
+# following is needed for reproducibility
+# refer to https://pytorch.org/docs/stable/notes/randomness.html
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+random.seed(17)
+np.random.seed(181)
+torch.manual_seed(129)
 
 
 def _flip_coco_person_keypoints(kps, width):
