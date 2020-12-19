@@ -41,7 +41,7 @@ parser.add_argument('--train', type=str2bool, default=True, metavar='BOOL',
                     help='Will start training the model (default=True)')
 parser.add_argument('--model-name', type=str, default='tf_efficientdet_d1', metavar='MODEL_NAME',
                     help='The name of the model to use as found in EfficientDet model_config.py file (default=tf_efficientdet_d0)')
-parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
+parser.add_argument('--lr', type=float, default=0.007, metavar='LR',
                     help='learning rate (default: 0.01)')
 parser.add_argument('--weight-decay', type=float, default=0.00005, metavar='WEIGHT_DECAY',
                     help='weight decay (default: 0.00005)')

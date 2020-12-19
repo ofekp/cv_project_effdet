@@ -195,7 +195,7 @@ def get_transform(train):
         # transforms.append(RandomBlackBoxes(0.3))
         transforms.append(RandomHorizontalFlip(0.3))
         # transforms.append(RandomRotate(0.3))
-        # transforms.append(RandomSaltAndPepper(0.3))
+        transforms.append(RandomSaltAndPepper(0.3))
 
         # transforms.append(ImageToTensor())  # helpers.scale already coverts to tensor
         # transforms.append(RandomGreyscale(0.1))
