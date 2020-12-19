@@ -105,8 +105,8 @@ class RandomRotate(object):
 class RandomSaltAndPepper():
     def __init__(self, prob):
         self.prob = prob
-        self.salt_threshold = 0.1
-        self.pepper_threshold = 0.1
+        self.salt_threshold = 0.05
+        self.pepper_threshold = 0.05
         self.upperValue = 0.9
         self.lowerValue = 0.1
 
@@ -191,10 +191,12 @@ def get_transform(train):
 #     transforms.append(T.ToTensor())
     if train:
         # transforms.append(ImageToPIL())
-        transforms.append(RandomBlackBoxes(0.3))
+
+        # transforms.append(RandomBlackBoxes(0.3))
         transforms.append(RandomHorizontalFlip(0.3))
-        transforms.append(RandomRotate(0.3))
-        transforms.append(RandomSaltAndPepper(0.3))
+        # transforms.append(RandomRotate(0.3))
+        # transforms.append(RandomSaltAndPepper(0.3))
+
         # transforms.append(ImageToTensor())  # helpers.scale already coverts to tensor
         # transforms.append(RandomGreyscale(0.1))
     return Compose(transforms)

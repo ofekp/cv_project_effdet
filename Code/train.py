@@ -39,9 +39,9 @@ def str2bool(v):
 
 parser.add_argument('--train', type=str2bool, default=True, metavar='BOOL',
                     help='Will start training the model (default=True)')
-parser.add_argument('--model-name', type=str, default='tf_efficientdet_d0', metavar='MODEL_NAME',
+parser.add_argument('--model-name', type=str, default='tf_efficientdet_d1', metavar='MODEL_NAME',
                     help='The name of the model to use as found in EfficientDet model_config.py file (default=tf_efficientdet_d0)')
-parser.add_argument('--lr', type=float, default=0.007, metavar='LR',
+parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                     help='learning rate (default: 0.01)')
 parser.add_argument('--weight-decay', type=float, default=0.00005, metavar='WEIGHT_DECAY',
                     help='weight decay (default: 0.00005)')
@@ -49,7 +49,7 @@ parser.add_argument('--test-size-pct', type=float, default=0.2, metavar='TEST_SI
                     help='test set size percentage, set to 0.2 for 20%.'
                          ' Minimum is one image per class which is 0.1 (default: 0.2)')
 # note the the images provided for the projct are of size 3648 x 2736
-parser.add_argument('--target-dim', type=int, default=512, metavar='DIM',  # 3072
+parser.add_argument('--target-dim', type=int, default=640, metavar='DIM',  # d0 512, d1 640, d2 768, d3 896, 3072
                     help='Dimention of the images. It is vital that the image size will be devisiable by 2 at least 6 times (default=512)')
 parser.add_argument('--freeze-batch-norm-weights', type=str2bool, default=True, metavar='BOOL',
                     help='Freeze batch normalization weights (default=True)')
@@ -70,8 +70,8 @@ parser.add_argument('--model-file-prefix', type=str, default='', metavar='PREFIX
                     help='Prefix, may be folder, to load the model file that is saved during training (default=empty string)')
 
 # scheduler params
-parser.add_argument('--sched-factor', type=float, default=0.5, metavar='FACTOR',
-                    help='scheduler factor (default: 0.5)')
+parser.add_argument('--sched-factor', type=float, default=0.7, metavar='FACTOR',
+                    help='scheduler factor (default: 0.7)')
 parser.add_argument('--sched-patience', type=int, default=1, metavar='PATIENCE',
                     help='scheduler patience (default: 1)')
 parser.add_argument('--sched-verbose', type=str2bool, default=False, metavar='VERBOSE',

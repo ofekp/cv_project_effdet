@@ -172,15 +172,17 @@ class Visualize:
             # boxes = prediction[0]['boxes']
             # class_ids = prediction[0]['labels']
             # masks = prediction[0]['masks'][:, 0]
-            threshold = 0.3
-            img_predictions = predictions[0]  # take only the first image in the batch
-            img_predictions = img_predictions[img_predictions[:,4] > threshold]
-            boxes = img_predictions[:,0:4]
-            class_ids = img_predictions[:,5].int()
-            # print("predictions:")
-            # print(img_predictions)
-            # print(boxes)
-            # print(class_ids)
-            if show_groud_truth:
-                self.show_image_data_ground_truth(dataset_df, dataset.image_ids[img_idx], is_colab)
-            self.show_image_data(imgs[0], class_ids, None, boxes, split_segments=split_segments, grid_layout=grid_layout)
+            threshold = 0.4
+            batch_size = len(predictions)
+            for i in range(batch_size):
+                img_predictions = predictions[i]  # take only the first image in the batch
+                img_predictions = img_predictions[img_predictions[:,4] > threshold]
+                boxes = img_predictions[:,0:4]
+                class_ids = img_predictions[:,5].int()
+                # print("predictions:")
+                # print(img_predictions)
+                # print(boxes)
+                # print(class_ids)
+                if show_groud_truth:
+                    self.show_image_data_ground_truth(dataset_df, dataset.image_ids[img_idx], is_colab)
+                self.show_image_data(imgs[i], class_ids, None, boxes, split_segments=split_segments, grid_layout=grid_layout)

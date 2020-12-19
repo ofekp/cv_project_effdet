@@ -131,12 +131,20 @@ def evaluate(model, data_loader, device, box_threshold=0.001):
                 'scores': predictions[i][:num_of_detections, 4],
                 'labels': predictions[i][:num_of_detections, 5],
             })
+            if num_of_detections > 0:
+                try:
+                    print("max score was [{}]".format(batch_predictions[0]['scores'][0]))
+                except:
+                    print("exception when using batch_predictions during eval")
+                    print("batch_size [{}]".format(batch_size))
+                    print(batch_predictions)
 
         model_time = time.time() - model_time
 
-        # print("here 01")
-        # print(targets)
-        print("max score was [{}]".format(batch_predictions[0]['scores'][0]))
+        # vis = visualize.Visualize('.', targets['img_size'][0][0])
+        # num_of_detections = len(torch.where(targets['cls'][0] > -1)[0])
+        # vis.show_image_data(images[0], targets['cls'][0,:num_of_detections].int(), None, targets['bbox'][0,:num_of_detections,[1,0,3,2]])
+
         # print("img ids: [{}]".format(targets['image_id'].to(cpu_device).tolist()))
         res = {image_id: output for image_id, output in zip(targets['image_id'].to(cpu_device).tolist(), batch_predictions)}  # ofekp: this used to be target["image_id"].item()
         evaluator_time = time.time()
