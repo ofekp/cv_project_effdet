@@ -22,6 +22,15 @@ from effdet.efficientdet import HeadNet
 import coco_utils, coco_eval, engine, utils
 
 
+is_colab = False
+try:
+    from google.colab import drive
+    print("Running on Google Colab")
+    is_colab = True
+except:
+    print("Running on non Google Colab env")
+
+
 parser = argparse.ArgumentParser(description='Training Config')
 
 # parsing boolean typed arguments
@@ -39,7 +48,7 @@ def str2bool(v):
 
 parser.add_argument('--train', type=str2bool, default=True, metavar='BOOL',
                     help='Will start training the model (default=True)')
-parser.add_argument('--model-name', type=str, default='tf_efficientdet_d1', metavar='MODEL_NAME',
+parser.add_argument('--model-name', type=str, default='tf_efficientdet_d2', metavar='MODEL_NAME',
                     help='The name of the model to use as found in EfficientDet model_config.py file (default=tf_efficientdet_d0)')
 parser.add_argument('--lr', type=float, default=0.007, metavar='LR',
                     help='learning rate (default: 0.01)')
@@ -49,16 +58,19 @@ parser.add_argument('--test-size-pct', type=float, default=0.2, metavar='TEST_SI
                     help='test set size percentage, set to 0.2 for 20%.'
                          ' Minimum is one image per class which is 0.1 (default: 0.2)')
 # note the the images provided for the projct are of size 3648 x 2736
-parser.add_argument('--target-dim', type=int, default=640, metavar='DIM',  # d0 512, d1 640, d2 768, d3 896, 3072
+parser.add_argument('--target-dim', type=int, default=768, metavar='DIM',  # d0 512, d1 640, d2 768, d3 896, 3072
                     help='Dimention of the images. It is vital that the image size will be devisiable by 2 at least 6 times (default=512)')
 parser.add_argument('--freeze-batch-norm-weights', type=str2bool, default=True, metavar='BOOL',
                     help='Freeze batch normalization weights (default=True)')
 parser.add_argument('--add-user-name-to-model-file', type=str2bool, default=True, metavar='BOOL',
                     help='Will add the user name to the model file that is saved during training (default=True)')
+parser.add_argument('--log-to-file', type=str2bool, default=True, metavar='BOOL',
+                    help='Log to file instead of to screen (default=True)')
 
-parser.add_argument('--num-epochs', type=int, default=150, metavar='NUM_EPOCHS',
+
+parser.add_argument('--num-epochs', type=int, default=400, metavar='NUM_EPOCHS',
                     help='number of epochs (default: 150)')
-parser.add_argument('--batch-size', type=int, default=4, metavar='BATCH_SIZE',
+parser.add_argument('--batch-size', type=int, default=2, metavar='BATCH_SIZE',
                     help='batch size (default: 12)')
 parser.add_argument('--num-workers', type=int, default=4, metavar='NUM_WORKERS',
                     help='number of workers for the dataloader (default: 4)')
@@ -195,7 +207,7 @@ def get_model_detection_efficientdet(model_name, num_classes, target_dim, freeze
 class TrainConfig:
     def __init__(self, args):
         if args.add_user_name_to_model_file:
-            self.model_file_suffix = os.getlogin() + "_" + args.model_name
+            self.model_file_suffix = ("gcolab" if is_colab else os.getlogin()) + "_" + args.model_name
         else:
             self.model_file_suffix = args.model_name
         self.model_file_prefix = args.model_file_prefix
@@ -209,7 +221,8 @@ class TrainConfig:
         self.model_name = args.model_name
         self.box_threshold = args.box_threshold
 
-        if "faster" in self.model_name:
+        # if "faster" in self.model_name:
+        if True:
             # special case of training the conventional model based on Faster R-CNN
             self.optimizer_class = torch.optim.SGD
             self.optimizer_config = dict(
@@ -225,12 +238,13 @@ class TrainConfig:
                 weight_decay=args.weight_decay
             )
 
-        if "_d0" in self.model_name:
+        # if "_d2" in self.model_name:
+        if True:
             print("Using StepLR")
             self.scheduler_class = torch.optim.lr_scheduler.StepLR
             self.scheduler_config = dict(
-                step_size=10,
-                gamma=0.2
+                step_size=50,
+                gamma=0.5
             )
         else:
             print("Using ReduceLROnPlateau")
@@ -433,7 +447,7 @@ class PrefetchLoader:
 
 class Trainer:
 
-    def __init__(self, main_folder_path, model, train_df, test_df, num_classes, target_dim, device, is_colab, config):
+    def __init__(self, main_folder_path, model, train_df, test_df, num_classes, target_dim, device, is_colab, config, args_text=None):
         self.main_folder_path = main_folder_path
         self.model = model
         self.train_df = train_df
@@ -443,6 +457,7 @@ class Trainer:
         self.num_classes = num_classes
         self.target_dim = target_dim
         self.is_colab = is_colab
+        self.args_text = args_text
         if "faster" in self.config.model_name:
             # special case of training the conventional model based on Faster R-CNN
             params = [p for p in self.model.parameters() if p.requires_grad]
@@ -485,7 +500,7 @@ class Trainer:
         model_file_path = 'Model/' + model_file_path + '.model'
 
         if is_colab:
-            model_file_path = self.main_folder_path + 'code_ofek/' + model_file_path
+            model_file_path = self.main_folder_path + '/' + model_file_path
         else:
             model_file_path = self.main_folder_path + '/' + model_file_path
 
@@ -532,6 +547,7 @@ class Trainer:
             'optimizer_state_dict': self.optimizer.state_dict(),
             'scheduler_state_dict': self.scheduler.state_dict(),
             #             'best_summary_loss': self.best_summary_loss,
+            'args': self.args_text,
             'epoch': self.epoch,
         }, self.model_file_path)
         self.log('Saved model to [{}]'.format(self.model_file_path))
@@ -555,6 +571,8 @@ class Trainer:
     def log(self, message):
         if self.config.verbose:
             print(message)
+        if is_colab:
+            return
         with open(self.log_file_path, 'a+') as logger:
             logger.write(f'{message}\n')
 
@@ -585,7 +603,8 @@ class Trainer:
                 box_threshold=self.config.box_threshold)
 
             # update the learning rate
-            if "_d0" in self.config.model_name:
+            # if "_d2" in self.config.model_name:
+            if True:
                 print("Updating StepLR")
                 self.scheduler.step()
             else:
@@ -612,6 +631,11 @@ def main():
     args, args_text = parse_args()
     main_folder_path = "."  # assuming running from Code folder
 
+    if not os.path.exists("Args"):
+        os.mkdir("Args")
+    with open("Args/args_text.yml", 'w') as args_file:
+        args_file.write(args_text)
+
     # create folders if needed
     needed_folders = ["./Model/", "./Log/"]
     for needed_folder in needed_folders:
@@ -619,14 +643,15 @@ def main():
             os.mkdir(needed_folder)
 
     # prepare a log file
-    now = datetime.now() # current date and time
-    date_str = now.strftime("%Y%m%d%H%M")
-    log_file_path = "./Log/" + date_str + ".log"
-    log_file = open(log_file_path, "a")
-    old_stdout = sys.stdout
-    old_stderr = sys.stderr
-    sys.stdout = log_file
-    sys.stderr = log_file
+    if args.log_to_file:
+        now = datetime.now() # current date and time
+        date_str = now.strftime("%Y%m%d%H%M")
+        log_file_path = "./Log/" + date_str + ".log"
+        log_file = open(log_file_path, "a")
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = log_file
+        sys.stderr = log_file
 
     # device
     forceCPU = False  # TODO: argparse
@@ -640,15 +665,13 @@ def main():
 
     num_classes = 6  # without background class
     train_df, test_df = process_data(main_folder_path, num_classes, args.test_size_pct)
-
     model = get_model_detection_efficientdet(args.model_name, num_classes, args.target_dim, freeze_batch_norm=args.freeze_batch_norm_weights)
 
     print("got model")
 
     # get the model using our helper function
     train_config = TrainConfig(args)
-    is_colab = False
-    trainer = Trainer(main_folder_path, model, train_df, test_df, num_classes, args.target_dim, device, is_colab, config=train_config)
+    trainer = Trainer(main_folder_path, model, train_df, test_df, num_classes, args.target_dim, device, is_colab, config=train_config, args_text=args_text)
 
     # load a saved model
     if args.load_model:
@@ -661,9 +684,10 @@ def main():
         print_nvidia_smi(device)
         trainer.train()
 
-    sys.stdout = old_stdout
-    sys.stderr = old_stderr
-    log_file.close()
+    if args.log_to_file:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        log_file.close()
 
 
 

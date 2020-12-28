@@ -79,7 +79,7 @@ class RandomHorizontalFlip(object):
 class RandomRotate(object):
     def __init__(self, prob):
         self.prob = prob
-        self.deg = [90, 10, 30, 45]
+        self.deg = [3, 5, 10, 15]
 
     def __call__(self, image, target):
         if random.random() > self.prob:
@@ -127,10 +127,6 @@ class RandomSaltAndPepper():
         random_matrix = np.random.rand(image_dim, image_dim)
         image[:, random_matrix < self.salt_threshold] = self.upperValue
         image[:, random_matrix > (1.0 - self.pepper_threshold)] = self.lowerValue
-        # elif self.noiseType == "RGB":
-        #     random_matrix = np.random.random(img.shape)
-        #     img[random_matrix >= (1 - self.treshold)] = self.upperValue
-        #     img[random_matrix <= self.treshold] = self.lowerValue
         return image, target
 
 
@@ -200,10 +196,10 @@ def get_transform(train):
     if train:
         # transforms.append(ImageToPIL())
 
-        # transforms.append(RandomBlackBoxes(0.3))
-        transforms.append(RandomHorizontalFlip(0.3))
-        # transforms.append(RandomRotate(0.3))
-        transforms.append(RandomSaltAndPepper(0.3))
+        transforms.append(RandomBlackBoxes(0.16))
+        transforms.append(RandomHorizontalFlip(0.16))
+        transforms.append(RandomRotate(0.16))
+        transforms.append(RandomSaltAndPepper(0.16))
 
         # transforms.append(ImageToTensor())  # helpers.scale already coverts to tensor
         # transforms.append(RandomGreyscale(0.1))
